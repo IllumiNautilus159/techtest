@@ -24,9 +24,32 @@ const Home: NextPage = () => {
       { Header: "Type", accessor: "type" },
       { Header: "Damage", accessor: "damage" },
       { Header: "pp", accessor: "pp" },
+      { Header: "Potential", accessor: "potential" }
     ],
     []
   );
+
+  const TableData = (()=>{
+
+    const newMoves=[];
+
+    moves.forEach((m)=>{
+
+      const newMove =[];
+
+      Object.keys(m).map((key)=>{
+        newMove[key]=m[key];
+      })
+
+      newMove['potential']=parseInt(m.pp) * parseInt(m.damage);
+      newMoves.push(newMove);
+
+    })
+
+    console.log(newMoves);
+    return newMoves;
+
+  })
 
   return (
     <>
@@ -37,6 +60,7 @@ const Home: NextPage = () => {
 
       <main className="container mx-auto flex min-h-screen flex-col items-center justify-center p-4">
         <div className="flex">
+          
           <Image
             src={snorlax}
             alt="Snorlax image"
