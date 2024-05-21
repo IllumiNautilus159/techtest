@@ -1,7 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/future/image";
-// import { trpc } from "../utils/trpc";
 import snorlax from "public/snorlax.webp";
 import moves from "../data/moves.json";
 import { useCallback, useMemo } from "react";
@@ -9,12 +8,6 @@ import { Move } from "../types/moves";
 import { Table } from "../components/molecules/Table";
 
 const Home: NextPage = () => {
-  // TODO uncomment for trpc examples
-  // const hello = trpc.example.exampleOfPassingInput.useQuery({
-  //   text: "from Snorlax",
-  // });
-  // const examples = trpc.example.getAll.useQuery();
-
   const getCellProps = useCallback(() => {
     return { className: "px-2 py-6 text-center" };
   }, []);
@@ -31,9 +24,32 @@ const Home: NextPage = () => {
       { Header: "Type", accessor: "type" },
       { Header: "Damage", accessor: "damage" },
       { Header: "pp", accessor: "pp" },
+      { Header: "Potential", accessor: "potential" }
     ],
     []
   );
+
+  const TableData = (()=>{
+
+    const newMoves=[];
+
+    moves.forEach((m)=>{
+
+      const newMove =[];
+
+      Object.keys(m).map((key)=>{
+        newMove[key]=m[key];
+      })
+
+      newMove['potential']=parseInt(m.pp) * parseInt(m.damage);
+      newMoves.push(newMove);
+
+    })
+
+    console.log(newMoves);
+    return newMoves;
+
+  })
 
   return (
     <>
@@ -44,6 +60,7 @@ const Home: NextPage = () => {
 
       <main className="container mx-auto flex min-h-screen flex-col items-center justify-center p-4">
         <div className="flex">
+          
           <Image
             src={snorlax}
             alt="Snorlax image"
