@@ -47,6 +47,9 @@ export const Table = ({
         ) : (
           rows.map((row) => {
             prepareRow(row);
+
+            const _r = row.cells[0]?.value;
+            
             return (
               // eslint-disable-next-line react/jsx-key
               <tr {...row.getRowProps(getRowProps && getRowProps(row))}>
@@ -56,7 +59,13 @@ export const Table = ({
                     className="p-4"
                     {...cell.getCellProps(getCellProps && getCellProps(cell))}
                   >
-                    {cell.render("Cell")}
+                    {(_r == cell.value) ? (
+                      <a className="underline hover:font-bold m-10" href={`/moves/${cell.value}`}>
+                        { cell.render("Cell") }
+                    </a>
+                    ):(
+                      cell.render("Cell")
+                    )}
                   </td>
                 ))}
               </tr>
