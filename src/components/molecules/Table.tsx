@@ -34,7 +34,7 @@ export const Table = (
       columns,
       data,
     });
-
+/*
     type pokeBuild = {
       _move:Move[],
       pokemonName:string,
@@ -51,7 +51,7 @@ export const Table = (
     });
     
     pokeBuild({_move:moves,pokemonName:'rar'})
-
+*/
     const [power,setPower] = useState(0);
     console.log(power);
     /*
