@@ -3,7 +3,7 @@ import Head from "next/head";
 import Image from "next/future/image";
 import snorlax from "public/snorlax.webp";
 import moves from "../data/moves.json";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState , useEffect} from "react";
 import { Move } from "../types/moves";
 import { Table } from "../components/molecules/Table";
 
@@ -20,6 +20,7 @@ const Home: NextPage = () => {
 
   const columns = useMemo(
     () => [
+      { Header: "Selected", accessor:"checked"},
       { Header: "Name", accessor: "name" },
       { Header: "Type", accessor: "type" },
       { Header: "Damage", accessor: "damage" },
@@ -29,27 +30,19 @@ const Home: NextPage = () => {
     []
   );
 
-  const TableData = (()=>{
+  type moveTable = Move & {potential:number};
 
-    const newMoves=[];
+  const newMoves : moveTable[] = 
+      moves.map( (m)=>{
+        return {...m,
+               potential:parseInt(m.pp) * parseInt(m.damage),
+              }
+      });
 
-    moves.forEach((m)=>{
-
-      const newMove =[];
-
-      Object.keys(m).map((key)=>{
-        newMove[key]=m[key];
-      })
-
-      newMove['potential']=parseInt(m.pp) * parseInt(m.damage);
-      newMoves.push(newMove);
-
-    })
-
-    console.log(newMoves);
-    return newMoves;
-
-  })
+  type allDamage = {
+    power:number,
+    pp:number
+  }
 
   return (
     <>
@@ -67,12 +60,13 @@ const Home: NextPage = () => {
             height={513}
             className="pr-12"
           />
-          <Table
-            columns={columns}
-            data={moves as Move[]}
-            getCellProps={getCellProps}
-            getRowProps={getRowProps}
-          />
+            <Table
+              key='mainTable'
+              columns={columns}
+              data={newMoves}
+              getCellProps={getCellProps}
+              getRowProps={getRowProps}
+            />
         </div>
         {/* TODO uncomment for trpc example */}
         {/* <footer className="p-6 text-center">

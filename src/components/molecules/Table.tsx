@@ -1,5 +1,8 @@
 import { useTable } from "react-table";
-
+import { useState } from "react";
+import { number } from "zod";
+import moves from "../../data/moves.json";
+import { Move } from "../../types/moves";
 export type TableProps = {
   className?: string;
   columns: any[];
@@ -9,21 +12,63 @@ export type TableProps = {
   noDataMessage?: string;
 };
 
-export const Table = ({
-  className = "",
-  columns,
-  data,
-  getCellProps,
-  getRowProps,
-  noDataMessage,
-}: TableProps) => {
+export const Table = (
+
+  {
+
+    className = "",
+    columns,
+    data,
+    getCellProps,
+    getRowProps,
+    noDataMessage,
+
+  }: 
+
+  TableProps
+
+) => {
+
   const { getTableProps, getTableBodyProps, flatHeaders, rows, prepareRow } =
     useTable({
       columns,
       data,
     });
 
+    type pokeBuild = {
+      _move:Move[],
+      pokemonName:string,
+      totalDamage:number
+    }
+
+    const buildPoke:pokeBuild = (make:pokeBuild)=>
+      make.map((m)=>{
+       return { 
+        _move:m.moves,
+        pokemonName:m.name,
+        totalDamage:m.power
+      }
+    });
+    
+    pokeBuild({_move:moves,pokemonName:'rar'})
+
+    const [power,setPower] = useState(0);
+    console.log(power);
+    /*
+    const [tableState, setTableState] = useState([]);
+    console.log(power);
+    const TotalPower = ()=>{
+      
+      const p = tableState.map((t:PowerTally)=>{
+        setPower(t.power * t.pp);
+      });
+    
+      return p
+    
+    }*/
+
   return (
+    <form id='snorlaxMoves'>
     <table {...getTableProps()} className={`w-full border-l p-4 ${className}`}>
       <thead>
         <tr>
@@ -46,33 +91,49 @@ export const Table = ({
           </tr>
         ) : (
           rows.map((row) => {
-            prepareRow(row);
 
+            prepareRow(row);
             const _r = row.cells[0]?.value;
-            
             return (
-              // eslint-disable-next-line react/jsx-key
               <tr {...row.getRowProps(getRowProps && getRowProps(row))}>
                 {row.cells.map((cell) => (
-                  // eslint-disable-next-line react/jsx-key
-                  <td
-                    className="p-4"
-                    {...cell.getCellProps(getCellProps && getCellProps(cell))}
-                  >
-                    {(_r == cell.value) ? (
+                  
+                  <td className="p-4" {...cell.getCellProps(getCellProps && getCellProps(cell))}>
+                    {row.values.checked ?? false}
+                    {row.getRowProps(cell).column.Header == "Selected" ? 
+                    
+                        <input type='checkbox' onChange={
+                          (e)=>(setPower( // likely way more convoluted than it needs to be right
+                            !cell.row.values.checked ? // see if it's checked
+                            power + (parseInt(cell.row.values.damage) * parseInt(cell.row.values.pp)) : // if it is being checked, add value
+                            power - (parseInt(cell.row.values.damage) * parseInt(cell.row.values.pp)) // if its being unchecked, subtract
+                            ),(
+                            cell.row.values.checked ? // toggle "checked" value
+                            cell.row.values.checked = false :
+                            cell.row.values.checked = true
+                          ),
+                          console.log(cell.row.values)//just for debugging
+                        )
+                      }></input>
+                      :
+                      // eslint-disable-next-line react/jsx-key
+                    (_r == cell.value) ? (
                       <a className="underline hover:font-bold m-10" href={`/moves/${cell.value}`}>
                         { cell.render("Cell") }
-                    </a>
+                      </a>
                     ):(
                       cell.render("Cell")
                     )}
-                  </td>
-                ))}
+                    </td>)
+                )}
+              
               </tr>
             );
           })
         )}
       </tbody>
     </table>
+    <p>Total Powaa: {power}</p>
+    </form>
   );
 };
